@@ -1,0 +1,24 @@
+{
+  "name": "com.toga.data.storage",
+  "displayName": "Data Storage",
+  "description": "Save data local in game",
+  "version": "1.0.1",
+  "unity": "2021.3",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tojidevgame/Data-Storage.git"
+  },
+  "author": {
+    "name": "Toji",
+    "email": "toainguyenprogramminggame@gmail.com"
+  },
+  "dependencies": {
+  },
+  "keywords": [
+    "save data in game"
+  ],
+  "release": {
+    "branches": ["main"]
+  }
+}

@@ -8,6 +8,7 @@ using UnityEngine;
 public abstract class BaseDataAsset : ScriptableObject
 {
     public abstract bool IsDoneLoadData { get; }
+    public abstract bool IsExistData { get; }
     public abstract void SaveData();
     public abstract void LoadData();
 }
@@ -28,12 +29,29 @@ public abstract class BaseDataAsset<DataModel> : BaseDataAsset where DataModel :
     protected bool isDoneLoadData = false;
 
     public override bool IsDoneLoadData => isDoneLoadData;
+    public override bool IsExistData => File.Exists(GetFilePath());
+
+    private string GetFilePath()
+    {
+        if (string.IsNullOrEmpty(fileName))
+        {
+#if DATA_LOG
+            Debug.LogError("Data Game Service: File name is empty");
+#endif
+            throw new Exception("File name is Empty");
+        }
+        return Application.persistentDataPath + "/" + fileName;
+    }
+
     public override void SaveData()
     {
-        string filePath = Application.persistentDataPath + "/" +fileName;
+        string filePath = GetFilePath();
 
         if(!File.Exists(filePath))
         {
+#if DATA_LOG
+            Debug.Log($"Data Game Service: Create new file {filePath}");    
+#endif
             dataModel = new DataModel();
             dataModel.SetDefaultData();
         }
@@ -42,10 +60,9 @@ public abstract class BaseDataAsset<DataModel> : BaseDataAsset where DataModel :
         {
             if (binaryFormat)
             {
-                using (FileStream fileStream = new FileStream(filePath, FileMode.Open))
+                using (FileStream fileStream = new FileStream(filePath, FileMode.OpenOrCreate))
                 {
                     IFormatter formatter = new BinaryFormatter();
-
                     formatter.Serialize(fileStream, dataModel);
                 }
             }
@@ -57,16 +74,16 @@ public abstract class BaseDataAsset<DataModel> : BaseDataAsset where DataModel :
         }catch (Exception e)
         {
 #if DATA_LOG
-            Debug.LogError($"Save Game Service: Error: {e}");
+            Debug.LogError($"Data Game Service: Save Data Error: {e}");
 #endif
         }
     }
 
     public override void LoadData()
     {
-        string filePath = Application.persistentDataPath + "/" + fileName;
+        string filePath = GetFilePath();
 #if DATA_LOG
-        Debug.Log($"Save Game Service: Save to {filePath}");
+        Debug.Log($"Data Game Service: Load data from {filePath}");
 #endif
         try
         {
@@ -78,7 +95,7 @@ public abstract class BaseDataAsset<DataModel> : BaseDataAsset where DataModel :
             {
                 if (binaryFormat)
                 {
-                    using (FileStream fileStream = new FileStream(filePath, FileMode.Open))
+                    using (FileStream fileStream = new FileStream(filePath, FileMode.OpenOrCreate))
                     {
                         IFormatter formatter = new BinaryFormatter();
                         dataModel = (DataModel)formatter.Deserialize(fileStream);
@@ -94,7 +111,7 @@ public abstract class BaseDataAsset<DataModel> : BaseDataAsset where DataModel :
         catch (Exception e)
         {
 #if DATA_LOG
-            Debug.LogError($"Save Game Service: Error: {e}");
+            Debug.LogError($"Data Game Service: Load Data Error: {e}");
 #endif
         }
         finally

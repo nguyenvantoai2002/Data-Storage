@@ -21,11 +21,8 @@ public abstract class BaseDataAsset<DataModel> : BaseDataAsset where DataModel :
     [Space(12)]
     [SerializeField] private string fileName = string.Empty;
 
-#if !SECURITY_DATA
     [SerializeField] private bool binaryFormat = false;
-#else
-    [SerializeField] private bool binaryFormat = true;
-#endif
+
     protected bool isDoneLoadData = false;
 
     public override bool IsDoneLoadData => isDoneLoadData;
@@ -34,30 +31,31 @@ public abstract class BaseDataAsset<DataModel> : BaseDataAsset where DataModel :
     private string GetFilePath()
     {
         if (string.IsNullOrEmpty(fileName))
-        {
-#if DATA_LOG
-            Debug.LogError("Data Game Service: File name is empty");
-#endif
-            throw new Exception("File name is Empty");
-        }
+            fileName = this.GetType().Name;
         return Application.persistentDataPath + "/" + fileName;
     }
 
     public override void SaveData()
     {
-        string filePath = GetFilePath();
-
-        if(!File.Exists(filePath))
-        {
-#if DATA_LOG
-            Debug.Log($"Data Game Service: Create new file {filePath}");    
+#if !SECURITY_DATA
+        binaryFormat = false;
+#else
+        binaryFormat = true;
 #endif
-            dataModel = new DataModel();
-            dataModel.SetDefaultData();
-        }
+
+        string filePath = GetFilePath();
 
         try
         {
+            if (!File.Exists(filePath))
+            {
+#if DATA_LOG
+                Debug.Log($"Data Game Service: Create new file {filePath}");    
+#endif
+                dataModel = new DataModel();
+                dataModel.SetDefaultData();
+            }
+
             if (binaryFormat)
             {
                 using (FileStream fileStream = new FileStream(filePath, FileMode.OpenOrCreate))
@@ -71,7 +69,8 @@ public abstract class BaseDataAsset<DataModel> : BaseDataAsset where DataModel :
                 string json = JsonConvert.SerializeObject(dataModel, Formatting.Indented);
                 File.WriteAllText(filePath, json);
             }
-        }catch (Exception e)
+        }
+        catch (Exception e)
         {
 #if DATA_LOG
             Debug.LogError($"Data Game Service: Save Data Error: {e}");
@@ -110,6 +109,7 @@ public abstract class BaseDataAsset<DataModel> : BaseDataAsset where DataModel :
         }
         catch (Exception e)
         {
+            isDoneLoadData = true;
 #if DATA_LOG
             Debug.LogError($"Data Game Service: Load Data Error: {e}");
 #endif

@@ -1,4 +1,4 @@
-public interface IDataAsset
+public interface IDataHolder
 {
     public bool IsDoneLoadData { get; }
     public void SaveData();

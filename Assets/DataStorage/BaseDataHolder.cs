@@ -4,7 +4,7 @@ using System.IO;
 using System.Text;
 using UnityEngine;
 
-public abstract class BaseDataHolder : IDataHolder
+public abstract class BaseDataHolder : MonoBehaviour, IDataHolder
 {
     public abstract bool IsDoneLoadData { get; }
     public abstract bool IsExistData { get; }

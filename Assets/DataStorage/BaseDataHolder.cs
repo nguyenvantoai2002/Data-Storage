@@ -20,8 +20,6 @@ public abstract class BaseDataHolder<TDataModel> : BaseDataHolder where TDataMod
     [Space(12)]
     [SerializeField] private string _fileName = string.Empty;
 
-    [SerializeField] private bool _binaryFormat = false;
-
     protected bool isDoneLoadData;
     
     private const string DEFAULT_KEY = "1234567890123456";
@@ -110,5 +108,11 @@ public abstract class BaseDataHolder<TDataModel> : BaseDataHolder where TDataMod
         {
             isDoneLoadData = true;
         }
+    }
+
+    private void OnValidate()
+    {
+        if (string.IsNullOrEmpty(_fileName))
+            _fileName = this.GetType().Name;
     }
 }

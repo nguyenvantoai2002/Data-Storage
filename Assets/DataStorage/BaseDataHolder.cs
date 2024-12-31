@@ -17,14 +17,13 @@ public abstract class BaseDataHolder<TDataModel> : BaseDataHolder where TDataMod
 {
     [SerializeField] protected TDataModel dataModel;
 
-    [Space(12)]
-    [SerializeField] private string _fileName = string.Empty;
+    [Space(12)] [SerializeField] private string _fileName = string.Empty;
 
     protected bool isDoneLoadData;
-    
+
     private const string DEFAULT_KEY = "1234567890123456";
-    private const string DEFAULT_IV = "6543210987654321"; 
-    
+    private const string DEFAULT_IV = "6543210987654321";
+
     protected virtual string GetKey() => DEFAULT_KEY;
     protected virtual string GetIV() => DEFAULT_IV;
 
@@ -86,11 +85,11 @@ public abstract class BaseDataHolder<TDataModel> : BaseDataHolder where TDataMod
             }
             else
             {
-#if !SECURITY_DATA
-            var key = Encoding.UTF8.GetBytes(GetKey()); // Key 16 bytes
-            var iv = Encoding.UTF8.GetBytes(GetIV());  // IV 16 bytes
-            var encryptedData = File.ReadAllBytes(filePath);
-            var json = DataEncryptor.Decrypt(encryptedData, key, iv);
+#if SECURITY_DATA
+                var key = Encoding.UTF8.GetBytes(GetKey()); // Key 16 bytes
+                var iv = Encoding.UTF8.GetBytes(GetIV()); // IV 16 bytes
+                var encryptedData = File.ReadAllBytes(filePath);
+                var json = DataEncryptor.Decrypt(encryptedData, key, iv);
 #else
                 var json = File.ReadAllText(filePath);
 #endif

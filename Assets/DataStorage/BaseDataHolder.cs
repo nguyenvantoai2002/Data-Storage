@@ -114,4 +114,12 @@ public abstract class BaseDataHolder<TDataModel> : BaseDataHolder where TDataMod
         if (string.IsNullOrEmpty(_fileName))
             _fileName = this.GetType().Name;
     }
+    
+    #if UNITY_EDITOR
+    [ContextMenu("Save Data")]
+    public void SaveDataEditor() => SaveData();
+    
+    [ContextMenu("Load Data")]
+    public void LoadDataEditor() => LoadData();
+    #endif
 }

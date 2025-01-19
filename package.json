@@ -2,7 +2,7 @@
   "name": "com.toga.data.storage",
   "displayName": "Data Storage",
   "description": "Save data local in game",
-  "version": "1.0.13",
+  "version": "1.0.14",
   "unity": "2021.3",
   "license": "MIT",
   "repository": {
